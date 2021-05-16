@@ -28,8 +28,10 @@ class ImageLoader():
     
     def process(self,image=None,PATH_IMAGE=None):
         if PATH_IMAGE is not None:    
-            image=np.array(Image.open(PATH_IMAGE).convert("RGB"))
+            image=np.array(Image.open(PATH_IMAGE).convert("RGB"))/255
         if image is None:
             raise "Error Image and Path both cannt be None"
+        image=image/255
         aug=self.transform(image=image)
+        
         return aug['image'],image

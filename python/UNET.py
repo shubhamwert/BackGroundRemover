@@ -1,9 +1,16 @@
+
 import torch
 import torchvision
 import os
 
 import torch.nn as nn
 import torchvision.transforms.functional as TF
+from Parameter import *
+
+
+
+
+
 
 
 
@@ -72,13 +79,11 @@ class UNET(nn.Module):
 #Choose input divisble by 16
 
 
-PATH_MODEL='model/model_full_unetv9.pth'
-device="cuda" if torch.cuda.is_available() else "cpu"
-
-
 def createModel(PATH):
     model=UNET(in_c=3,o_c=1).to(device)
     model = torch.load(PATH)
+    model.to(device)
+    print("USING ",device)
     return model
 
 def predict(x,model):
@@ -88,3 +93,4 @@ def predict(x,model):
       preds=(preds>0.5).float()
     return preds  
 #   torchvision.utils.save_image(preds,"test/Images/pred_{}.png".format('r'))
+

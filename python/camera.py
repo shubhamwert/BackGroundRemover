@@ -1,7 +1,8 @@
 from UNET import *
 import cv2
 from ImageLoader import ImageLoader
-model=createModel('model/model_full_unetv9.pth')
+from Parameter import *
+model=createModel(PATH_MODEL)
 model.eval()
 
 
