@@ -84,7 +84,7 @@ def createModel(PATH):
 def predict(x,model):
     with torch.no_grad():
       x=x.to(device)
-      preds=nn.functional.sigmoid(model(x))
+      preds=torch.sigmoid(model(x))
       preds=(preds>0.5).float()
     return preds  
 #   torchvision.utils.save_image(preds,"test/Images/pred_{}.png".format('r'))
