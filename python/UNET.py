@@ -13,7 +13,6 @@ from Parameter import *
 
 
 
-
 def load_checkpoint(c,model):
   print("loading_model...")
   model.load_state_dict(c["state_dict"])
@@ -80,9 +79,11 @@ class UNET(nn.Module):
 
 
 def createModel(PATH):
+  
     model=UNET(in_c=3,o_c=1).to(device)
-    model = torch.load(PATH)
+    model = torch.load(PATH,map_location=torch.device(device))
     model.to(device)
+    model.eval()
     print("USING ",device)
     return model
 
