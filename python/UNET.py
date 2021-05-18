@@ -91,7 +91,7 @@ def predict(x,model):
     with torch.no_grad():
       x=x.to(device)
       preds=torch.sigmoid(model(x))
-      preds=(preds>0.5).float()
+      preds=(preds>PROB).float()
     return preds  
 #   torchvision.utils.save_image(preds,"test/Images/pred_{}.png".format('r'))
 
