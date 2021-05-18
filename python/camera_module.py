@@ -11,18 +11,22 @@ from ImageLoader import ImageLoader
 
 
 class Camera:
-    def __init__(self,PATH_MODEL,bg_path:None) -> None:
+    def __init__(self,PATH_MODEL,bg_path=None) -> None:
        self.model=createModel(PATH_MODEL)
        self.cap=cv2.VideoCapture(0)
        self.bg_path=bg_path
        self.I=ImageLoader()
+       self.bgupdated=False
+
     def capture(self,image):
         ret,frame=self.cap.read()
-        assert image.shape ==frame.shape
-
-        frame=cv2.flip(frame,1)
         if frame is None:
             return None,2
+        assert image.shape ==frame.shape, print(frame.shape ,"  ",image.shape)
+
+        frame=cv2.flip(frame,1)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
         X,_=self.I.process(image=frame.copy())
         mask=predict(X.unsqueeze(0),self.model)
         mask=mask.squeeze(0).squeeze(0).detach().cpu().numpy().copy()
@@ -34,21 +38,23 @@ class Camera:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             return None,0
         return out,1        
-    def setbg(self,bg_path:None):
+    def setbg(self,bg_path=None):
         if bg_path is None:
             return None
         else:
+            print(bg_path)
             self.bg_path=bg_path
             return 0
 
     def getbg(self,shape):
         if self.bg_path is None:
-            return np.zeros(shape)
+            print(self.bg_path)
+            return np.zeros(shape+[3])
         else:
-
+            print("asdadsasd",self.bg_path)
             image=cv2.imread(self.bg_path)
             image=cv2.resize(image,shape)
-            return image
+            return image    
     def close(self):
         self.cap.release()
         cv2.destroyAllWindows()
@@ -56,13 +62,16 @@ class Camera:
 
         bg_image=self.getbg([640,480])
         while stop_condition:
+            if self.bgupdated:
+                bg_image=self.getbg([640,480])
+                self.bgupdated=False
             out,response=self.capture(bg_image)
             
             if response==0:
-                break
+                    break
             else:
-                if response==2:
-                    continue
+                    if response==2:
+                        continue
 
             cv2.imshow("Image",out)
 
@@ -70,6 +79,6 @@ class Camera:
 
 def main():
     C=Camera(PATH_MODEL,'sample_tests/sample_backgrounds/index.jpeg')
-    C.run()
+    C.run() 
 if __name__ == "__main__":
     main()
