@@ -1,4 +1,4 @@
-from Parameter import PATH_MODEL
+from Parameter import PATH_MODEL,DEFAULT_BG_PATH
 import tkinter as tk
 import cv2
 from PIL import ImageTk
@@ -13,10 +13,13 @@ class VideoApp:
         # self.output_path=outputPath
         self.thread=None
         self.stopEvent=None
-
+        self.current_bg=0
         self.root=tk.Tk()
         self.panel=None
-        btn = tk.Button(self.root, text="Snapshot!",
+        
+        self.bg_list=self.getImageList(DEFAULT_BG_PATH)
+        print(self.bg_list)
+        btn = tk.Button(self.root, text="Change BG",
 			command=self.change_bg)
         btn.pack(side="bottom", fill="both", expand="yes", padx=10,
 			pady=10)
@@ -58,11 +61,21 @@ class VideoApp:
                         self.panel.image = image
     def change_bg(self):
         print('bg pth updated')
-        self.cam.setbg(bg_path="sample_tests/sample_backgrounds/index.jpeg")
+        self.current_bg+=1
+        if self.current_bg>len(self.bg_list):
+            self.current_bg=0
+        self.cam.setbg(bg_path=self.bg_list[self.current_bg])
         self.cam.bgupdated=True
     def onClose(self):
         self.cam.close()
         self.root.destroy()
+    def getImageList(self,path):
+        files=[]
+        for r, d, f in os.walk(path):
+            for file in f:
+                if '.jpg' in file or '.jpeg' in file:
+                    files.append(os.path.join(r, file))
+        return files
 
 def main():
     C=VideoApp()
