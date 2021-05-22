@@ -4,8 +4,7 @@ from PIL import Image
 import numpy as np
 import torchvision.utils  as U
 
-image_height=160
-image_width=240
+from Parameter import image_height,image_width
 
 
 
@@ -31,7 +30,7 @@ class ImageLoader():
             image=np.array(Image.open(PATH_IMAGE).convert("RGB"))/255
         if image is None:
             raise "Error Image and Path both cannt be None"
-        image=image/255
+        image=image
         aug=self.transform(image=image)
         
         return aug['image'],image
